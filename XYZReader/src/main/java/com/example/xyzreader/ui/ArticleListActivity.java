@@ -39,6 +39,7 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
+    private static final String TAG = ArticleListActivity.class.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,13 +92,21 @@ public class ArticleListActivity extends AppCompatActivity implements
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         if(!isConnected) {
             CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorlayout);
-            Snackbar.make(coordinatorLayout, getString(R.string.connectivity_msg), Snackbar.LENGTH_LONG).show();
+            Snackbar snackbar = Snackbar.make(coordinatorLayout, getString(R.string.connectivity_msg), Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Retry", new View.OnClickListener(){
+                        @Override
+                        public void onClick(View v) {
+                            Log.d(TAG,"Snackbar Retry");
+                            refresh();
+                        }
+                    });
+            snackbar.show();
         }
         return isConnected;
     }
 
     private void refresh() {
-        Log.d("ArticleListActivity", "Refresh");
+        Log.d(TAG, "Refresh");
         if(checkConnectivity())
             startService(new Intent(this, UpdaterService.class));
     }
